@@ -33,9 +33,15 @@ class TwitterOAuth {
   public $http_info;
   /* Set the useragnet. */
   public $useragent = 'TwitterOAuth v0.2.0-beta2';
+  /* Contains the proxy to be used. Empty if no proxy */
+  public $proxy = '';
+  /* Contains the proxy_user to be used. Not used if no proxy. Default: no user */
+  public $proxy_user = '';
+  /* Contains the proxy_password to be used. Not used if no proxy, or not proxy_user. Default: no password */
+  public $proxy_password = '';
   /* Immediately retry the API call if the response was not successful. */
   //public $retry = TRUE;
-
+  
 
 
 
@@ -201,6 +207,14 @@ class TwitterOAuth {
     curl_setopt($ci, CURLOPT_SSL_VERIFYPEER, $this->ssl_verifypeer);
     curl_setopt($ci, CURLOPT_HEADERFUNCTION, array($this, 'getHeader'));
     curl_setopt($ci, CURLOPT_HEADER, FALSE);
+
+    if ($this->proxy != '') {
+      curl_setopt($ci, CURLOPT_PROXY, $this->proxy);
+      curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, 1);
+      if ($this->proxy_user != '') {
+        curl_setopt($ci, CURLOPT_PROXYUSERPWD, $this->proxy_user.":".$this->proxy_password);
+      }
+    }
 
     switch ($method) {
       case 'POST':
